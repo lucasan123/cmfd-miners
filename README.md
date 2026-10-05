@@ -5,14 +5,14 @@ Community distribution for [CMFD Pool](https://cmfd-pool.online/).
 
 ## Downloads
 
-Release **r11** — October 3, 2026. Binaries are hosted in GitHub Releases.
+Release **r12** — October 5, 2026. Binaries are hosted in GitHub Releases.
 
 | Platform | Package |
 | --- | --- |
-| Windows x64 | [Download ZIP](https://github.com/lucasan123/cmfd-miners/releases/download/r11/cmfd-miner-mainnet-windows.zip) |
-| Linux x64 | [Download tar.gz](https://github.com/lucasan123/cmfd-miners/releases/download/r11/cmfd-miner-mainnet-linux.tar.gz) |
-| HiveOS Jammy 22.04+ | [Custom miner package 11.1.0](https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-11.1.0/cmfd-miner-hiveos-11.1.0.tar.gz) |
-| Checksums | [SHA256SUMS](https://github.com/lucasan123/cmfd-miners/releases/download/r11/SHA256SUMS) |
+| Windows x64 | [Download ZIP](https://github.com/lucasan123/cmfd-miners/releases/download/r12/cmfd-miner-mainnet-windows.zip) |
+| Linux x64 | [Download tar.gz](https://github.com/lucasan123/cmfd-miners/releases/download/r12/cmfd-miner-mainnet-linux.tar.gz) |
+| HiveOS Jammy 22.04+ | [Custom miner package 12.0.0](https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-12.0.0/cmfd-miner-hiveos-12.0.0.tar.gz) |
+| Checksums | [SHA256SUMS](https://github.com/lucasan123/cmfd-miners/releases/download/r12/SHA256SUMS) |
 
 Packages include the miner, launch scripts, model downloader, checksums and an English README. No wallet or private keys are included.
 
@@ -42,15 +42,15 @@ Replace `YOUR_PUBLIC_ADDRESS` and `rig-name`. To save your address, set `CMFD_PA
 
 ### HiveOS
 
-Use the [dedicated HiveOS release and Flight Sheet instructions](https://github.com/lucasan123/cmfd-miners/releases/tag/hiveos-11.1.0).
-This package contains the unchanged r11 binary with HiveOS configuration,
+Use the [dedicated HiveOS release and Flight Sheet instructions](https://github.com/lucasan123/cmfd-miners/releases/tag/hiveos-12.0.0).
+This package contains the qualified r12 binary with HiveOS configuration,
 launch and statistics adapters.
 
 | Flight Sheet field | Value |
 | --- | --- |
 | Miner | Custom |
 | Miner name | `cmfd-miner-hiveos` |
-| Installation URL | `https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-11.1.0/cmfd-miner-hiveos-11.1.0.tar.gz` |
+| Installation URL | `https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-12.0.0/cmfd-miner-hiveos-12.0.0.tar.gz` |
 | Hash algorithm | `forgematrixv4` |
 | Wallet and worker template | `%WAL%` |
 | Pool URL | `cmfd+tls://109.199.124.187:29465?pin=ebe88f5e05f3a222208d551d05b6d39057b64ce8239ba7a708d487e15ac711be` |
@@ -65,9 +65,9 @@ installation directory across upgrades. Keep the hashrate watchdog disabled
 during the first download and model load.
 
 HiveOS displays the real **total rig FW/s** as H/s. Per-GPU rates are unavailable
-in r11 and are left empty. The adapter was tested on Ubuntu 22.04 and with the
+in r12 and are left empty. The adapter was tested on Ubuntu 22.04 and with the
 HiveOS client statistics code; no complete HiveOS GPU session is claimed.
-[HiveOS checksums](https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-11.1.0/SHA256SUMS)
+[HiveOS checksums](https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-12.0.0/SHA256SUMS)
 and the full English README are included in the release.
 
 ## Requirements and operation
@@ -82,31 +82,54 @@ and the full English README are included in the release.
 
 ## Benchmarks
 
-Recorded Linux measurements from October 3, 2026. **FW/s means completed work per second.** It is not a coin earnings estimate.
+Paired Linux measurements on October 5, 2026. **FW/s is completed work per
+second**, not an earnings estimate. Authentic model, stable local TLS job,
+complete GPU computation, output transfer and BLAKE3 hashing. Same host,
+driver and power limit for each r11/r12 comparison.
 
-### Stable-job benchmark
+### Batch 16, stable job
 
-Authentic `MODEL-V2.bank`, local TLS pool with a stable job, batch size **16**, complete GPU computation and BLAKE3 output hashing. Mean of 10-second reporting windows after the initial loading window:
+Alternating r11/r12/r11/r12, 100 seconds each. First 30-second reporting
+window excluded; mean of the remaining windows and both repetitions.
 
-| GPU | GPUs | Total FW/s |
-| --- | ---: | ---: |
-| RTX 5070 Ti | 1 | **43.44** |
-| RTX 4090 | 1 | **64.62** |
-| RTX 5090 | 1 | **87.91** |
-| RTX 5090 | 2 | **174.25** |
+| GPU | Power limit | r11 FW/s | r12 FW/s | Change |
+|---|---:|---:|---:|---:|
+| RTX 5070 Ti | 300 W | 45.14 | **47.10** | +4.3% |
+| RTX 4090 | 450 W | 69.86 | **76.92** | +10.1% |
+| RTX 5090 | 575 W | 91.05 | **93.80** | +3.0% |
 
-These are measurements of the optimized V4 qualification builds, not fresh r11 benchmarks. The 4090 result used the intermediate qualification build; its GPU machine code matched the final qualification build. These tests did not submit payable mainnet shares. No Windows GPU performance measurement is claimed.
+### Default batch 4 and changing jobs
 
-### Live mining observations
+One 100-second pair at batch 4 measured 42.78→44.55 FW/s on 5070 Ti and
+68.10→75.75 on 4090, and 82.81→85.56 on 5090. The default stays at **4**: in ten job changes spaced
+5.137 seconds apart, the 5070 Ti candidate discarded 8 nonces per change,
+versus 32 at batch 16. Maximum old-batch retirement was166 ms versus653 ms.
+This small sample is not a p99 latency estimate.
 
-Short r10 canary observations while work was continuously available, using the launcher's default batch size **4**:
+Real rates depend on job changes, pool synchronization, clock/power limits
+and host configuration. The pool dashboard estimates credited work and can
+differ from the miner's reported rate. No payable mainnet shares were sent
+in these controlled tests. Other models in the RTX 40/50 families have not
+been benchmarked with r12.
 
-| GPU configuration | Total reported FW/s |
-| --- | ---: |
-| 4 × RTX 5060 Ti | approximately **89.5** |
-| 1 × RTX 5090 | approximately **75.5** |
+### Power and diagnostics
 
-These short samples are not sustained benchmarks or a prediction of r11 performance. Actual wall-clock throughput can be lower because of job changes, synchronization pauses, clock/power limits and host configuration. The dashboard's share-based estimate measures credited work and can differ from the miner's reported rate. The r11 launcher defaults to batch size 4 to reduce discarded work on changing jobs.
+On the tested 5070 Ti, r12 measured 43.96 FW/s at 250 W and 47.10 at 300 W.
+The tested 4090 measured 80.06 at 500 W and 84.76 at 600 W: about 5.9% more work
+for 20% more power. Higher power reduced work per watt in these measurements.
+**The miner does not change power limits or clocks.**
+
+The Windows ZIP includes `diagnostica-potenza.bat`. Run it while mining to
+save 60 seconds of GPU power, limits, clocks, temperature and process CPU.
+It changes no settings and does not stop the miner.
+
+### Correctness and platform coverage
+
+Linux r12 passed official 50/50 vectors, two complete CPU/GPU nonce comparisons,
+the 402,653,184-value trace, TLS/pool and persistent-verifier tests on 5070 Ti,
+4090 and 5090. Windows passed CPU vectors and TLS tests; its sm89/sm120 device
+instructions and encodings match Linux exactly. **Native Windows GPU execution
+has not been tested for r12.** Keep r11 available as a rollback.
 
 ## Verify the download
 
@@ -125,8 +148,8 @@ sha256sum cmfd-miner-mainnet-linux.tar.gz
 Expected archive SHA-256 values:
 
 ```text
-2876b96710729b356781825a81cf3f3778f0e21fb7eabbae214ee78211216072  cmfd-miner-mainnet-windows.zip
-af94dea5b405ef14901ee005a74ceb15adc038586b196812ec39e4580be64b4c  cmfd-miner-mainnet-linux.tar.gz
+ec0aae4ffa2da43e68ec4035a334b1c6daa4517424150f8cebe6663676b71c2c  cmfd-miner-mainnet-windows.zip
+d9f8b1e4ad38d4607a1ca829fff8fb45917bcff6f1f075a31092d635e0743118  cmfd-miner-mainnet-linux.tar.gz
 ```
 
-These are the same r11 packages previously offered by the pool dashboard. This repository distributes binaries and documentation only; it is not the official Common Foundry project.
+The previous [r11 release](https://github.com/lucasan123/cmfd-miners/releases/tag/r11) remains available. This repository distributes binaries and documentation only; it is not the official Common Foundry project.
