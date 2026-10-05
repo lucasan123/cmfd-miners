@@ -5,14 +5,14 @@ Community distribution for [CMFD Pool](https://cmfd-pool.online/).
 
 ## Downloads
 
-Release **r12** — October 5, 2026. Binaries are hosted in GitHub Releases.
+Release **r13** — October 5, 2026. Binaries are hosted in GitHub Releases.
 
 | Platform | Package |
 | --- | --- |
-| Windows x64 | [Download ZIP](https://github.com/lucasan123/cmfd-miners/releases/download/r12/cmfd-miner-mainnet-windows.zip) |
-| Linux x64 | [Download tar.gz](https://github.com/lucasan123/cmfd-miners/releases/download/r12/cmfd-miner-mainnet-linux.tar.gz) |
-| HiveOS Jammy 22.04+ | [Custom miner package 12.0.0](https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-12.0.0/cmfd-miner-hiveos-12.0.0.tar.gz) |
-| Checksums | [SHA256SUMS](https://github.com/lucasan123/cmfd-miners/releases/download/r12/SHA256SUMS) |
+| Windows x64 | [Download ZIP](https://github.com/lucasan123/cmfd-miners/releases/download/r13/cmfd-miner-mainnet-windows.zip) |
+| Linux x64 | [Download tar.gz](https://github.com/lucasan123/cmfd-miners/releases/download/r13/cmfd-miner-mainnet-linux.tar.gz) |
+| HiveOS Jammy 22.04+ | [Custom miner package 13.0.0](https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-13.0.0/cmfd-miner-hiveos-13.0.0.tar.gz) |
+| Checksums | [SHA256SUMS](https://github.com/lucasan123/cmfd-miners/releases/download/r13/SHA256SUMS) |
 
 Packages include the miner, launch scripts, model downloader, checksums and an English README. No wallet or private keys are included.
 
@@ -42,22 +42,22 @@ Replace `YOUR_PUBLIC_ADDRESS` and `rig-name`. To save your address, set `CMFD_PA
 
 ### HiveOS
 
-Use the [dedicated HiveOS release and Flight Sheet instructions](https://github.com/lucasan123/cmfd-miners/releases/tag/hiveos-12.0.0).
-This package contains the qualified r12 binary with HiveOS configuration,
+Use the [dedicated HiveOS release and Flight Sheet instructions](https://github.com/lucasan123/cmfd-miners/releases/tag/hiveos-13.0.0).
+This package contains the qualified r13 binary with HiveOS configuration,
 launch and statistics adapters.
 
 | Flight Sheet field | Value |
 | --- | --- |
 | Miner | Custom |
 | Miner name | `cmfd-miner-hiveos` |
-| Installation URL | `https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-12.0.0/cmfd-miner-hiveos-12.0.0.tar.gz` |
+| Installation URL | `https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-13.0.0/cmfd-miner-hiveos-13.0.0.tar.gz` |
 | Hash algorithm | `forgematrixv4` |
 | Wallet and worker template | `%WAL%` |
 | Pool URL | `cmfd+tls://109.199.124.187:29465?pin=ebe88f5e05f3a222208d551d05b6d39057b64ce8239ba7a708d487e15ac711be` |
 | Pass | `%WORKER_NAME%` |
 | Extra config arguments | Empty; optionally `--gpu 0,1 --batch 4` |
 
-Requires **Jammy/Ubuntu 22.04 or newer (glibc 2.34+)**, an **x86-64-v3/AVX2 CPU**
+Requires **Jammy/Ubuntu 22.04 or newer (glibc 2.34+)**, an **x86-64/SSE2 CPU (AVX2 optional)**
 and **NVIDIA R580+**. Focal/Ubuntu 20.04 is not supported by this build.
 The CUDA toolkit is not needed. All NVIDIA GPUs are selected by default.
 The verified model downloads automatically and remains outside the miner
@@ -65,9 +65,9 @@ installation directory across upgrades. Keep the hashrate watchdog disabled
 during the first download and model load.
 
 HiveOS displays the real **total rig FW/s** as H/s. Per-GPU rates are unavailable
-in r12 and are left empty. The adapter was tested on Ubuntu 22.04 and with the
+in r13 and are left empty. The adapter was tested on Ubuntu 22.04 and with the
 HiveOS client statistics code; no complete HiveOS GPU session is claimed.
-[HiveOS checksums](https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-12.0.0/SHA256SUMS)
+[HiveOS checksums](https://github.com/lucasan123/cmfd-miners/releases/download/hiveos-13.0.0/SHA256SUMS)
 and the full English README are included in the release.
 
 ## Requirements and operation
@@ -80,7 +80,25 @@ and the full English README are included in the release.
 - Pool fee: **3%**. PPLNS rewards mature after **100 confirmations**; automatic payments start at **10 CMFD**.
 - Leave the consensus fingerprint set to `auto`. It is not your wallet address.
 
-## Benchmarks
+## r13 CPU compatibility
+
+AVX2 is now optional. CPU code and every dependency are rebuilt for baseline
+x86-64/SSE2, with automatic SIMD selection in BLAKE3. The optimized r12 GPU
+kernels and pool protocol are retained. A physical Celeron G5905 without AVX
+or AVX2 reproduced r12's illegal-instruction failure; r13 passes CPU, TLS,
+pool and verifier tests and mines with RTX 3060. The HiveOS preflight accepts it.
+
+On RTX 4090 at 500 W and batch 4, alternating r12/r13/r12/r13 measured
+**79.38 / 79.68 FW/s**, respectively. This small difference is not a speed
+upgrade claim. The Celeron performance benchmark was not completed.
+
+Run `cpu-diagnostics.bat` or `bash cpu-diagnostics.sh` to create
+`CPU-DIAGNOSTICS.txt` without using the GPU or connecting to a pool.
+See the [r13 test coverage and limitations](https://github.com/lucasan123/cmfd-miners/releases/tag/r13).
+
+## Historical r12 benchmarks
+
+The measurements below belong to r12 and are retained as historical context.
 
 Paired Linux measurements on October 5, 2026. **FW/s is completed work per
 second**, not an earnings estimate. Authentic model, stable local TLS job,
@@ -148,8 +166,8 @@ sha256sum cmfd-miner-mainnet-linux.tar.gz
 Expected archive SHA-256 values:
 
 ```text
-ec0aae4ffa2da43e68ec4035a334b1c6daa4517424150f8cebe6663676b71c2c  cmfd-miner-mainnet-windows.zip
-d9f8b1e4ad38d4607a1ca829fff8fb45917bcff6f1f075a31092d635e0743118  cmfd-miner-mainnet-linux.tar.gz
+e237d50273111d9d643728c49f2bf5d45ab434b5b71c9ce881ccb310b4a6d327  cmfd-miner-mainnet-windows.zip
+bda8e21f1490c92a2b6f59d424b83eaefc9cecce888237582ae20c860ef1c829  cmfd-miner-mainnet-linux.tar.gz
 ```
 
-The previous [r11 release](https://github.com/lucasan123/cmfd-miners/releases/tag/r11) remains available. This repository distributes binaries and documentation only; it is not the official Common Foundry project.
+The previous [r12 release](https://github.com/lucasan123/cmfd-miners/releases/tag/r12) remains available. This repository distributes binaries and documentation only; it is not the official Common Foundry project.
